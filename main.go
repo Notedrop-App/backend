@@ -1,15 +1,21 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v3"
+	"github.com/notedrop-app/backend/db"
 	"github.com/notedrop-app/backend/utils"
 )
 
 func init() {
 	utils.LoadENV("./.env")
+	err := db.ConnectDB(os.Getenv("DATABASE_URL"))
+	if err != nil {
+		fmt.Println("Error connecting to database", err)
+	}
 }
 
 func main() {
