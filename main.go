@@ -1,20 +1,21 @@
 package main
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v3"
+	"github.com/notedrop-app/backend/controllers"
 	"github.com/notedrop-app/backend/db"
 	"github.com/notedrop-app/backend/utils"
 )
 
 func init() {
 	utils.LoadENV("./.env")
+
 	err := db.ConnectDB(os.Getenv("DATABASE_URL"))
 	if err != nil {
-		fmt.Println("Error connecting to database", err)
+		return
 	}
 }
 
@@ -26,10 +27,9 @@ func main() {
 		JSONEncoder: json.Marshal,
 		JSONDecoder: json.Unmarshal,
 	})
+	api := app.Group("/api/v1")
 
-	app.Get("/", func(c fiber.Ctx) error {
-		return c.SendString("Hello World!")
-	})
+	api.Post("/waitlist/join", controllers.Join(db.DB))
 
 	app.Listen(":" + port)
 }
